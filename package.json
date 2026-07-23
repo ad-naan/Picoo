@@ -7,9 +7,14 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
+    "@auth/drizzle-adapter": "^1.11.3",
+    "@node-rs/argon2": "^2.0.2",
     "@phosphor-icons/react": "^2.1.10",
     "@radix-ui/react-avatar": "latest",
     "@radix-ui/react-dropdown-menu": "latest",
@@ -21,6 +26,7 @@
     "ioredis": "latest",
     "lucide-react": "latest",
     "next": "latest",
+    "next-auth": "5.0.0-beta.32",
     "postgres": "latest",
     "react": "latest",
     "react-dom": "latest",
@@ -31,6 +37,7 @@
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
+    "drizzle-kit": "^0.31.10",
     "eslint": "latest",
     "eslint-config-next": "latest",
     "typescript": "5.9.3"

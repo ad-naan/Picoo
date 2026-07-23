@@ -7,5 +7,13 @@ const messages: Record<keyof typeof zhCN, string> = {
   "tab.popular": "Popular", "tab.following": "Following", "action.viewAll": "View all", "syndication.title": "From the web",
   "syndication.summary": "RSS updates from 28 selected AI creator sites", "syndication.manage": "Subscriptions",
   "syndication.channels": "Channels", "locale.switch": "中文",
+  "auth.signIn.title": "Welcome back", "auth.signIn.subtitle": "Keep exploring and creating remarkable AI work",
+  "auth.signUp.title": "Create your Picoo account", "auth.signUp.subtitle": "Join AI creators to collect, remix, and publish",
+  "auth.name": "Display name", "auth.handle": "Handle", "auth.email": "Email", "auth.password": "Password",
+  "auth.passwordHint": "At least 10 characters with upper, lower case letters and a number",
+  "auth.signIn.action": "Sign in", "auth.signUp.action": "Create account", "auth.signIn.pending": "Signing in...",
+  "auth.signUp.pending": "Creating account...", "auth.noAccount": "New to Picoo?", "auth.hasAccount": "Already registered?",
+  "auth.signUp.link": "Create an account", "auth.signIn.link": "Back to sign in",
+  "auth.error.credentials": "Incorrect email or password", "auth.error.register": "Registration failed. Check your details and retry",
 };
 export default messages;

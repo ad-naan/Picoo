@@ -1,8 +1,9 @@
 import Redis from "ioredis";
+import { resolveRedisUrl } from "@/shared/config/connections";
 
 let redis: Redis | undefined;
 
 export function getRedis() {
-  if (!redis) redis = new Redis(process.env.REDIS_URL ?? "redis://localhost:6379", { lazyConnect: true });
+  if (!redis) redis = new Redis(resolveRedisUrl(), { lazyConnect: true });
   return redis;
 }

@@ -14,6 +14,46 @@ pnpm dev
 
 The app runs at `http://localhost:3000` by default.
 
+## Identity setup
+
+Picoo uses Auth.js, Argon2id, PostgreSQL-backed identity data, Redis rate limiting, and multi-role RBAC.
+
+Set these values in `.env.local` (and keep the file out of Git):
+
+```env
+AUTH_SECRET=<at-least-32-random-characters>
+PICOO_SUPER_ADMIN_EMAIL=you@example.com
+
+POSTGRES_USER=picoo_app
+POSTGRES_PASSWORD=<password-may-contain-special-characters>
+POSTGRES_DB=picoo
+POSTGRES_HOST=127.0.0.1
+POSTGRES_PORT=5432
+
+REDIS_PASSWORD=<redis-password>
+REDIS_HOST=127.0.0.1
+REDIS_PORT=6379
+REDIS_DB=0
+```
+
+Separate connection variables are recommended because Picoo URL-encodes passwords automatically. This avoids broken URLs when passwords contain `#`, `@`, `:`, `/`, or spaces.
+
+Generate and apply schema migrations:
+
+```powershell
+pnpm db:generate
+pnpm db:migrate
+```
+
+Register with the email in `PICOO_SUPER_ADMIN_EMAIL`. Its first successful login receives the `super_admin` role. GitHub OAuth is enabled when both `AUTH_GITHUB_ID` and `AUTH_GITHUB_SECRET` are configured.
+
+Identity routes:
+
+- `/sign-in` and `/sign-up`
+- `/settings/profile` and `/settings/security`
+- `/studio` and `/studio/verification`
+- `/admin`, `/admin/users`, `/admin/verifications`, `/admin/settings`
+
 ## PostgreSQL
 
 Docker Compose creates the configured database and owner automatically. For an existing PostgreSQL server, connect as an administrator and run:
