@@ -1,0 +1,48 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Next.js and build output
+.next/
+out/
+dist/
+build/
+.turbo/
+coverage/
+*.tsbuildinfo
+next-env.d.ts
+
+# Environment and secrets
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+!.env.example
+*.pem
+*.key
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Hosting and local tooling
+.vercel/
+.adnify/
+.agents/
+.idea/
+.vscode/
+
+# OS metadata
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.swp

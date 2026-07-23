@@ -1,0 +1,23 @@
+const messages = {
+  "search.placeholder": "搜索你感兴趣的作品、创作者，或标签...",
+  "action.publish": "发布",
+  "hero.title.line1": "创意不设限",
+  "hero.title.line2": "AI 让想法",
+  "hero.title.accent": "发光",
+  "hero.subtitle": "在 Picoo，发现、分享和创造无限可能",
+  "hero.explore": "探索作品",
+  "hero.publish": "发布作品",
+  "section.featured": "精选推荐",
+  "section.trending": "正在流行",
+  "tab.recommended": "推荐",
+  "tab.latest": "最新",
+  "tab.popular": "热门",
+  "tab.following": "关注",
+  "action.viewAll": "查看全部",
+  "syndication.title": "外部精选",
+  "syndication.summary": "来自 28 个优质 AI 创作站点的 RSS 更新",
+  "syndication.manage": "管理订阅",
+  "syndication.channels": "发布渠道",
+  "locale.switch": "EN",
+} as const;
+export default messages;

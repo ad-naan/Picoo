@@ -1,0 +1,235 @@
+html {
+  scrollbar-gutter: stable;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+.app-shell {
+  --right-rail-width: 292px;
+  width: 100%;
+  max-width: none;
+  grid-template-columns: 224px minmax(0, 1fr) 292px;
+}
+
+.topbar {
+  position: relative;
+  z-index: 20;
+  width: calc(100% + var(--right-rail-width));
+  border-bottom: 1px solid rgba(232, 230, 242, .72);
+  background: rgba(255, 255, 255, .96);
+}
+
+.nav-item svg {
+  width: 30px;
+  height: 30px;
+  padding: 5px;
+  border-radius: 9px;
+  transition: background-color .18s ease, color .18s ease, transform .18s ease;
+}
+
+.nav-item:hover svg {
+  background: #ebe8ff;
+  transform: translateY(-1px);
+}
+
+.nav-item.active svg {
+  background: #f9e9fb;
+  color: #d84bd5;
+}
+
+.rail-title {
+  gap: 9px !important;
+  font-size: 12px !important;
+  letter-spacing: -.01em;
+}
+
+.rail-title-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid #e5e0ff;
+  border-radius: 9px;
+  background: #f2efff;
+  color: #7055e9;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .9);
+}
+
+.rail-card header .rail-title-icon svg {
+  color: currentColor;
+}
+
+.rail-card:nth-of-type(2) .rail-title-icon {
+  border-color: #ffddea;
+  background: #fff0f6;
+  color: #e84e92;
+}
+
+.rail-card:nth-of-type(3) .rail-title-icon {
+  border-color: #d9edf7;
+  background: #edf8fc;
+  color: #2994bd;
+}
+
+.sidebar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.right-rail {
+  min-width: 0;
+}
+
+@media (min-width: 1600px) {
+  .app-shell {
+    --right-rail-width: 316px;
+    grid-template-columns: 236px minmax(0, 1fr) 316px;
+  }
+
+  .content,
+  .topbar {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+
+  .right-rail {
+    padding-right: 20px;
+  }
+}
+
+/* Wide desktop displays are often short. Keep the discovery loop visible
+   without scaling type or changing the information hierarchy. */
+@media (min-width: 1251px) and (max-height: 1000px) {
+  .topbar {
+    height: 70px;
+  }
+
+  .hero {
+    height: 250px;
+  }
+
+  .hero-copy {
+    padding: 34px 38px;
+  }
+
+  .hero h1 {
+    font-size: 36px;
+    line-height: 1.3;
+  }
+
+  .hero p {
+    margin: 12px 0 18px;
+  }
+
+  .hero-bot {
+    top: 60px;
+    transform: scale(.88) rotate(2deg);
+  }
+
+  .crown {
+    top: 24px;
+  }
+
+  .float-card.video {
+    top: 74px;
+  }
+
+  .float-card.code {
+    top: 42px;
+  }
+
+  .orbit {
+    top: 10px;
+    transform: scale(.88) rotate(-20deg);
+  }
+
+  .categories {
+    margin: 14px 0 20px;
+  }
+
+  .category {
+    height: 60px;
+  }
+
+  .section-heading {
+    margin-bottom: 10px;
+  }
+
+  .cover {
+    height: 150px;
+  }
+
+  .card-copy {
+    height: 78px;
+    padding-top: 10px;
+  }
+
+  .card-meta {
+    height: 34px;
+  }
+
+  .trending {
+    margin-top: 20px;
+  }
+
+  .trend-art {
+    height: 104px;
+  }
+
+  .rail-card {
+    margin-top: 64px;
+  }
+
+  .creator {
+    height: 43px;
+  }
+
+  .event {
+    height: 154px;
+  }
+
+  .activity-row {
+    height: 35px;
+  }
+
+  .invite {
+    height: 132px;
+  }
+
+  .nav-item {
+    height: 40px;
+  }
+
+  .nav-label {
+    margin-top: 15px;
+  }
+
+  .inspiration {
+    min-height: 160px;
+    margin-top: 20px;
+  }
+}
+
+@media (max-width: 1250px) {
+  .app-shell {
+    --right-rail-width: 0px;
+    grid-template-columns: 200px minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  html {
+    scrollbar-gutter: auto;
+  }
+
+  .app-shell {
+    display: block;
+  }
+}

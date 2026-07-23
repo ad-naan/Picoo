@@ -1,0 +1,38 @@
+{
+  "name": "picoo",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@phosphor-icons/react": "^2.1.10",
+    "@radix-ui/react-avatar": "latest",
+    "@radix-ui/react-dropdown-menu": "latest",
+    "@radix-ui/react-tooltip": "latest",
+    "class-variance-authority": "latest",
+    "clsx": "latest",
+    "drizzle-orm": "latest",
+    "framer-motion": "latest",
+    "ioredis": "latest",
+    "lucide-react": "latest",
+    "next": "latest",
+    "postgres": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "tailwind-merge": "latest",
+    "zod": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "eslint": "latest",
+    "eslint-config-next": "latest",
+    "typescript": "5.9.3"
+  }
+}
