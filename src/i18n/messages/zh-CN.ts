@@ -38,5 +38,14 @@ const messages = {
   "auth.signIn.link": "返回登录",
   "auth.error.credentials": "邮箱或密码不正确",
   "auth.error.register": "注册失败，请检查信息后重试",
+  "explore.title": "探索作品",
+  "explore.empty": "还没有已发布的作品，成为第一个发布者吧。",
+  "explore.sort.latest": "最新",
+  "explore.sort.trending": "热门",
+  "creation.remixFrom": "改编自",
+  "creation.compatibleModels": "兼容模型",
+  "creator.works": "作品",
+  "creator.verified": "已认证创作者",
+  "creator.empty": "这位创作者还没有公开作品。",
 } as const;
 export default messages;

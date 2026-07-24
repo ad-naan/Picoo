@@ -4,6 +4,7 @@ import {
 } from "drizzle-orm/pg-core";
 
 export const creationType = pgEnum("creation_type", ["agent", "workflow", "prompt", "tool", "article"]);
+export const creationStatus = pgEnum("creation_status", ["draft", "published", "under_review", "archived"]);
 export const accountStatus = pgEnum("account_status", ["pending", "active", "restricted", "suspended", "banned", "deleted"]);
 export const platformRole = pgEnum("platform_role", ["member", "creator", "curator", "moderator", "admin", "super_admin"]);
 export const creatorType = pgEnum("creator_type", ["individual", "team", "organization"]);
@@ -121,17 +122,28 @@ export const creations = pgTable("creations", {
   id: uuid("id").primaryKey().defaultRandom(),
   authorId: uuid("author_id").notNull().references(() => users.id),
   type: creationType("type").notNull(),
+  slug: text("slug").notNull(),
+  status: creationStatus("status").notNull().default("draft"),
   title: text("title").notNull(),
   description: text("description").notNull(),
+  content: text("content").notNull().default(""),
   coverUrl: text("cover_url"),
+  tags: jsonb("tags").$type<string[]>().notNull().default([]),
+  compatibleModels: jsonb("compatible_models").$type<string[]>().notNull().default([]),
   remixedFromId: uuid("remixed_from_id"),
   likes: integer("likes").notNull().default(0),
   views: integer("views").notNull().default(0),
   forks: integer("forks").notNull().default(0),
   favorites: integer("favorites").notNull().default(0),
+  publishedAt: timestamp("published_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
-});
+}, (table) => [
+  uniqueIndex("creations_slug_unique").on(table.slug),
+  index("creations_author_idx").on(table.authorId),
+  index("creations_status_idx").on(table.status),
+  index("creations_type_idx").on(table.type),
+]);
 
 export const favorites = pgTable("favorites", {
   userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),

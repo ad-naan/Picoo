@@ -1,0 +1,63 @@
+/* 公开页（explore / creation / creator）专用样式，复用 globals 的 app-shell/卡片基础。 */
+
+.cover-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* explore 顶部排序切换（复用 section-heading nav 语义） */
+.section-heading nav a {
+  padding: 7px 0;
+  color: #858594;
+  font-size: 12px;
+  text-decoration: none;
+}
+.section-heading nav a.selected {
+  position: relative;
+  color: #5544d6;
+  font-weight: 700;
+}
+.section-heading nav a.selected:after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 2px;
+  background: #6650ef;
+  border-radius: 2px;
+}
+
+/* Creation 详情页 */
+.detail { max-width: 760px; }
+.detail-head h1 { margin: 12px 0 6px; font-size: 30px; font-weight: 900; letter-spacing: 0; }
+.detail-desc { margin: 0 0 18px; color: #66667a; font-size: 15px; line-height: 1.6; }
+.detail-meta { display: flex; align-items: center; gap: 14px; padding-bottom: 18px; border-bottom: 1px solid #f0f0f6; color: #858596; font-size: 13px; }
+.detail-meta span { display: inline-flex; align-items: center; gap: 4px; }
+.detail-author { display: flex; align-items: center; gap: 9px; text-decoration: none; color: #333; }
+.detail-author small { color: #9696a4; }
+.detail-cover { width: 100%; margin: 20px 0; border-radius: 16px; }
+.detail-remix { margin: 18px 0; padding: 11px 15px; border-radius: 12px; background: #faf9ff; color: #6556cb; font-size: 13px; }
+.detail-remix a { color: #6750f5; font-weight: 700; }
+.detail-content { margin: 22px 0; color: #33333f; font-size: 15px; line-height: 1.85; }
+.detail-content p { margin: 0 0 14px; white-space: pre-wrap; }
+.detail-block { margin: 24px 0; }
+.detail-block h3 { margin: 0 0 12px; font-size: 15px; }
+.chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { display: inline-flex; padding: 6px 12px; border-radius: 12px; background: #f5f3ff; color: #6556cb; font-size: 12px; text-decoration: none; }
+
+/* Creator 主页 */
+.creator-hero { display: flex; align-items: flex-start; gap: 20px; padding: 26px; border: 1px solid #eeeef4; border-radius: 18px; background: linear-gradient(120deg, #fff7fd, #f4f1ff); }
+.creator-hero h1 { display: flex; align-items: center; gap: 8px; margin: 0 0 4px; font-size: 26px; font-weight: 900; }
+.creator-handle { margin: 0 0 12px; color: #77778a; font-size: 13px; }
+.creator-bio { margin: 0 0 14px; color: #55556a; font-size: 14px; line-height: 1.65; max-width: 520px; }
+.creator-stat { text-align: center; }
+.creator-stat strong { display: block; font-size: 26px; font-weight: 900; color: #5544d6; }
+.creator-stat small { color: #88889a; font-size: 12px; }
+
+.inspiration-cta { display: inline-flex; align-items: center; gap: 4px; margin-top: 15px; padding: 9px 14px; border-radius: 18px; background: #212130; color: #fff; font-size: 12px; font-weight: 700; text-decoration: none; }
+
+@media (max-width: 900px) {
+  .creator-hero { flex-wrap: wrap; }
+}

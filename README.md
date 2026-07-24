@@ -72,10 +72,20 @@ Use `REDIS_URL=redis://:<url-encoded-password>@127.0.0.1:6379/0`. Passwords cont
 
 ## Architecture
 
-- `src/modules/creation`: Creation aggregate and repository contracts
+- `src/modules/creation`: Creation aggregate, publish state machine, and repository contracts
 - `src/modules/identity`: role and permission policy
 - `src/modules/syndication`: inbound RSS aggregation and outbound publishing ports
-- `src/infrastructure`: PostgreSQL/Drizzle and Redis adapters
+- `src/modules/notification`: email sender port (console mock for development)
+- `src/infrastructure`: PostgreSQL/Drizzle and Redis adapters, plus the Drizzle creation repository and read-model queries
 - `src/app`: Next.js delivery layer
+
+Public routes:
+
+- `/explore` — published creations, filterable by `?type=&tag=&sort=trending|latest`
+- `/creation/[slug]` — creation detail with SEO metadata
+- `/creator/[handle]` — creator profile and works
+- `/studio/creations` — creator work management (draft/publish/archive/delete)
+
+Creators must pass verification (`/studio/verification`) to gain the `creator` role before publishing. See `docs/CREATION-OPERATIONS.md` for the publish state machine and permissions.
 
 External RSS entries are modeled separately from native Creations. This preserves source attribution and allows deduplication by source plus external ID. Outbound delivery targets use ports so RSS output, webhooks, newsletters, and social channels can be added without coupling them to the core domain.

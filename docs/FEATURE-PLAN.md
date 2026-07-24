@@ -226,6 +226,8 @@
 
 现有 `users.role` 单枚举在迁移后废弃，改为 `user_roles` 多对多关系。所有表使用 UUID、UTC 时间和必要的唯一索引。
 
+`creations` 表在 `0001` 迁移中扩展了发布所需字段：`slug`（唯一，公开 URL）、`status`（`draft/published/under_review/archived`）、`content`、`tags`、`compatible_models`、`published_at`，并新增 slug 唯一索引与 author/status/type 索引。详见 `CREATION-OPERATIONS.md`。
+
 ## 10. 页面与路由结构
 
 ```text
@@ -288,6 +290,8 @@
 - 认证申请与管理员审批闭环。
 
 验收：用户可完成账号生命周期；创作者可提交认证；管理员可审批、驳回和撤销。
+
+> 进度：Creation 发布/管理闭环已落地——`/studio/creations` 作品管理（草稿/发布/下架/删除）、公开 `/explore`、`/creation/[slug]`、`/creator/[handle]`，首页接入真实数据。发布状态机与权限见 `CREATION-OPERATIONS.md`。资料/安全设置与基础 Analytics 仍在推进。
 
 ### Phase C：管理员高级模块
 

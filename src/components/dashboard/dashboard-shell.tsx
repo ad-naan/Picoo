@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { ArrowLeftIcon, GearIcon, HouseIcon, ShieldCheckIcon, UserCircleIcon, UsersIcon, CertificateIcon, SlidersHorizontalIcon, ChartLineUpIcon } from "@phosphor-icons/react/dist/ssr";
+import { ArrowLeftIcon, GearIcon, HouseIcon, ShieldCheckIcon, UserCircleIcon, UsersIcon, CertificateIcon, SlidersHorizontalIcon, ChartLineUpIcon, StackIcon } from "@phosphor-icons/react/dist/ssr";
 
 type DashboardArea = "settings" | "studio" | "admin";
 const areaLabels: Record<DashboardArea, string> = { settings: "个人中心", studio: "Creator Studio", admin: "管理后台" };
 const navigation = {
   settings: [["/settings/profile", UserCircleIcon, "个人资料"], ["/settings/security", ShieldCheckIcon, "账号安全"]],
-  studio: [["/studio", ChartLineUpIcon, "创作概览"], ["/studio/verification", CertificateIcon, "创作者认证"]],
+  studio: [["/studio", ChartLineUpIcon, "创作概览"], ["/studio/creations", StackIcon, "我的作品"], ["/studio/verification", CertificateIcon, "创作者认证"]],
   admin: [["/admin", HouseIcon, "管理概览"], ["/admin/users", UsersIcon, "用户管理"], ["/admin/verifications", CertificateIcon, "认证审核"], ["/admin/settings", SlidersHorizontalIcon, "高级配置"]],
 } satisfies Record<DashboardArea, readonly (readonly [string, React.ElementType, string])[]>;
 

@@ -15,5 +15,9 @@ const messages: Record<keyof typeof zhCN, string> = {
   "auth.signUp.pending": "Creating account...", "auth.noAccount": "New to Picoo?", "auth.hasAccount": "Already registered?",
   "auth.signUp.link": "Create an account", "auth.signIn.link": "Back to sign in",
   "auth.error.credentials": "Incorrect email or password", "auth.error.register": "Registration failed. Check your details and retry",
+  "explore.title": "Explore", "explore.empty": "No published creations yet. Be the first to publish.",
+  "explore.sort.latest": "Latest", "explore.sort.trending": "Trending",
+  "creation.remixFrom": "Remixed from", "creation.compatibleModels": "Compatible models",
+  "creator.works": "Works", "creator.verified": "Verified creator", "creator.empty": "This creator has no public works yet.",
 };
 export default messages;
