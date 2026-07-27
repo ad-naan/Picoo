@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { and, eq, gt, isNull, or } from "drizzle-orm";
+import { and, count, eq, gt, isNull, or } from "drizzle-orm";
 import { getDatabase } from "@/infrastructure/database/client";
-import { creatorProfiles, userProfiles, userRoles, users } from "@/infrastructure/database/schema";
+import { creatorProfiles, follows, userProfiles, userRoles, users } from "@/infrastructure/database/schema";
 import { queryCardsByAuthor } from "@/infrastructure/creation/creation-queries";
 import { CreatorProfileView, type CreatorProfileData } from "./creator-profile-view";
+import { DrizzleSocialRepository } from "@/infrastructure/social/drizzle-social-repository";
+import { auth } from "@/auth";
+
+const socialRepository = new DrizzleSocialRepository();
 
 async function loadCreator(handle: string): Promise<{ profile: CreatorProfileData; authorId: string } | null> {
   const db = getDatabase();
@@ -25,6 +29,7 @@ async function loadCreator(handle: string): Promise<{ profile: CreatorProfileDat
   return {
     authorId: row.id,
     profile: {
+      id: row.id, authenticated: false, isSelf: false, following: false, followerCount: 0,
       handle: row.handle ?? handle, name: row.name ?? row.handle ?? "Creator",
       bio: row.bio ?? undefined, displayTitle: row.displayTitle ?? undefined,
       specialties: row.specialties ?? [], verified: Boolean(creatorRole), worksCount: works.length,
@@ -43,6 +48,15 @@ export default async function CreatorPage({ params }: { params: Promise<{ handle
   const { handle } = await params;
   const loaded = await loadCreator(handle);
   if (!loaded) notFound();
-  const works = await queryCardsByAuthor(loaded.authorId, 24);
+  const session = await auth();
+  const [works, following, followerRows] = await Promise.all([
+    queryCardsByAuthor(loaded.authorId, 24),
+    socialRepository.isFollowing(session?.user?.id, loaded.authorId),
+    getDatabase().select({ value: count() }).from(follows).where(eq(follows.followingId, loaded.authorId)),
+  ]);
+  loaded.profile.authenticated = Boolean(session?.user?.id);
+  loaded.profile.isSelf = session?.user?.id === loaded.authorId;
+  loaded.profile.following = following;
+  loaded.profile.followerCount = followerRows[0]?.value ?? 0;
   return <CreatorProfileView profile={loaded.profile} works={works} />;
 }

@@ -1,0 +1,1 @@
+.follow-button{height:40px;padding:0 15px;display:flex;align-items:center;gap:7px;border:0;border-radius:10px;background:#6750e8;color:#fff;font-size:12px;font-weight:800;box-shadow:0 8px 18px rgba(103,80,232,.2)}.follow-button.active{border:1px solid #dcd8eb;background:#fff;color:#666476;box-shadow:none}.follow-button:disabled{opacity:.6}

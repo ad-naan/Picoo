@@ -33,6 +33,7 @@ export interface CreationRepository {
   findByAuthor(authorId: string, opts?: { status?: CreationStatus }): Promise<readonly Creation[]>;
   listPublished(opts: ListPublishedOptions): Promise<readonly Creation[]>;
   create(input: CreateCreationInput): Promise<Creation>;
+  createRemix(sourceId: string, authorId: string): Promise<Creation>;
   update(id: string, authorId: string, patch: UpdateCreationPatch): Promise<Creation>;
   setStatus(id: string, authorId: string, status: CreationStatus): Promise<Creation>;
   remove(id: string, authorId: string): Promise<void>;

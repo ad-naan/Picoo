@@ -71,6 +71,20 @@ export class DrizzleCreationRepository implements CreationRepository {
     return toDomain(row);
   }
 
+  async createRemix(sourceId: string, authorId: string) {
+    const row = await this.db.transaction(async (tx) => {
+      const [source] = await tx.select().from(creations).where(and(eq(creations.id, sourceId), eq(creations.status, "published"))).limit(1);
+      if (!source) throw new Error("REMIX_SOURCE_NOT_FOUND");
+      const id = crypto.randomUUID();
+      const title = `${source.title} Remix`;
+      const slug = slugify(title, shortSuffix(id));
+      const [created] = await tx.insert(creations).values({ id, authorId, type: source.type, slug, status: "draft", title, description: source.description, content: source.content, coverUrl: source.coverUrl, tags: source.tags, compatibleModels: source.compatibleModels, remixedFromId: source.id }).returning();
+      await tx.update(creations).set({ forks: sql`${creations.forks} + 1` }).where(eq(creations.id, source.id));
+      return created;
+    });
+    return toDomain(row);
+  }
+
   async update(id: string, authorId: string, patch: UpdateCreationPatch) {
     const [row] = await this.db.update(creations).set({
       ...(patch.type !== undefined && { type: patch.type }),

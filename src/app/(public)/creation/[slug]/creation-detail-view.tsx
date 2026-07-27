@@ -1,15 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { HeartIcon as Heart, EyeIcon as Eye, GitForkIcon as Fork, BookmarkSimpleIcon as Bookmark } from "@phosphor-icons/react";
+import { EyeIcon as Eye, GitForkIcon as Fork } from "@phosphor-icons/react";
 import { AppShell } from "@/components/site/app-shell";
 import { useLocale } from "@/i18n/locale-provider";
+import { CreationEngagement, type EngagementComment } from "./creation-engagement";
 
 const TYPE_LABEL: Record<string, string> = {
   agent: "Agent", workflow: "工作流", prompt: "Prompt", tool: "工具", article: "文章",
 };
 
 export interface CreationDetailData {
+  id: string;
   slug: string;
   type: string;
   title: string;
@@ -27,6 +29,10 @@ export interface CreationDetailData {
   remixFromSlug?: string;
   remixFromTitle?: string;
   publishedAt?: string;
+  authenticated: boolean;
+  liked: boolean;
+  favorited: boolean;
+  comments: EngagementComment[];
 }
 
 export function CreationDetailView({ data }: { data: CreationDetailData }) {
@@ -44,11 +50,11 @@ export function CreationDetailView({ data }: { data: CreationDetailData }) {
           </Link>
           <span className="grow" />
           <span><Eye size={15} /> {data.views}</span>
-          <span><Heart size={15} /> {data.likes}</span>
           <span><Fork size={15} /> {data.forks}</span>
-          <button className="save" style={{ position: "static" }} aria-label="收藏"><Bookmark size={17} /></button>
         </div>
       </header>
+
+      <CreationEngagement creationId={data.id} slug={data.slug} authenticated={data.authenticated} initialLiked={data.liked} initialFavorited={data.favorited} initialLikes={data.likes} initialFavorites={data.favorites} initialComments={data.comments} />
 
       {data.coverUrl && <img src={data.coverUrl} alt={data.title} className="detail-cover" />}
 

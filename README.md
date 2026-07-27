@@ -54,6 +54,14 @@ Identity routes:
 - `/studio` and `/studio/verification`
 - `/admin`, `/admin/users`, `/admin/verifications`, `/admin/settings`
 
+Community and library routes:
+
+- `/creation/[slug]`: like, favorite, comment, and Remix actions
+- `/creator/[handle]`: follow creators
+- `/settings/collections`: organize favorites into collections
+- `/settings/notifications`: interaction notifications
+- `/collection/[handle]/[slug]`: public and unlisted collection sharing
+
 ## PostgreSQL
 
 Docker Compose creates the configured database and owner automatically. For an existing PostgreSQL server, connect as an administrator and run:

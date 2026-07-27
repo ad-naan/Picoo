@@ -4,11 +4,14 @@ import { and, eq } from "drizzle-orm";
 import { getDatabase } from "@/infrastructure/database/client";
 import { creations, users } from "@/infrastructure/database/schema";
 import { DrizzleCreationRepository } from "@/infrastructure/creation/drizzle-creation-repository";
+import { DrizzleSocialRepository } from "@/infrastructure/social/drizzle-social-repository";
+import { auth } from "@/auth";
 import { CreationDetailView, type CreationDetailData } from "./creation-detail-view";
 
 const repository = new DrizzleCreationRepository();
+const socialRepository = new DrizzleSocialRepository();
 
-async function loadDetail(slug: string): Promise<CreationDetailData | null> {
+async function loadDetail(slug: string, viewerId?: string): Promise<CreationDetailData | null> {
   const db = getDatabase();
   const [row] = await db.select({
     id: creations.id, slug: creations.slug, type: creations.type, status: creations.status,
@@ -30,12 +33,15 @@ async function loadDetail(slug: string): Promise<CreationDetailData | null> {
     remixFromTitle = source?.title;
   }
 
+  const [viewerState, commentRows] = await Promise.all([socialRepository.getCreationState(viewerId, row.id), socialRepository.listComments(row.id)]);
   return {
-    slug: row.slug, type: row.type, title: row.title, description: row.description, content: row.content,
+    id: row.id, slug: row.slug, type: row.type, title: row.title, description: row.description, content: row.content,
     coverUrl: row.coverUrl ?? undefined, tags: row.tags, compatibleModels: row.compatibleModels,
     authorHandle: row.authorHandle ?? row.authorName ?? "creator", authorName: row.authorName ?? "Creator",
     likes: row.likes, views: row.views, forks: row.forks, favorites: row.favorites,
-    remixFromSlug, remixFromTitle, publishedAt: row.publishedAt?.toISOString(),
+    remixFromSlug, remixFromTitle, publishedAt: row.publishedAt?.toISOString(), authenticated: Boolean(viewerId),
+    liked: viewerState.liked, favorited: viewerState.favorited,
+    comments: commentRows.map((comment) => ({ ...comment, createdAt: comment.createdAt.toISOString() })),
   };
 }
 
@@ -52,7 +58,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function CreationDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const detail = await loadDetail(slug);
+  const session = await auth();
+  const detail = await loadDetail(slug, session?.user?.id);
   if (!detail) notFound();
   const found = await repository.findBySlug(slug);
   if (found) await repository.incrementView(found.props.id);

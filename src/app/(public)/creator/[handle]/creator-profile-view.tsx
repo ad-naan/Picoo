@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { SealCheckIcon as Verified } from "@phosphor-icons/react";
+import { SealCheckIcon as Verified, UserPlusIcon } from "@phosphor-icons/react";
+import { useState, useTransition } from "react";
 import { AppShell } from "@/components/site/app-shell";
 import { CreationCard, type CreationCardData } from "@/components/site/creation-card";
 import { useLocale } from "@/i18n/locale-provider";
+import { toggleCreatorFollow } from "./actions";
 
 export interface CreatorProfileData {
   handle: string;
@@ -14,10 +16,22 @@ export interface CreatorProfileData {
   specialties: string[];
   verified: boolean;
   worksCount: number;
+  id: string;
+  authenticated: boolean;
+  isSelf: boolean;
+  following: boolean;
+  followerCount: number;
 }
 
 export function CreatorProfileView({ profile, works }: { profile: CreatorProfileData; works: CreationCardData[] }) {
   const { t } = useLocale();
+  const [following, setFollowing] = useState(profile.following);
+  const [followers, setFollowers] = useState(profile.followerCount);
+  const [pending, startTransition] = useTransition();
+  function follow() {
+    if (!profile.authenticated) { window.location.href = `/sign-in?callbackUrl=${encodeURIComponent(`/creator/${profile.handle}`)}`; return; }
+    startTransition(async () => { const active = await toggleCreatorFollow(profile.id, profile.handle); setFollowing(active); setFollowers((count) => Math.max(0, count + (active ? 1 : -1))); });
+  }
   return <AppShell>
     <section className="creator-hero" style={{ marginTop: 22 }}>
       <span className="avatar" style={{ width: 72, height: 72, fontSize: 28 }}>{profile.handle[0]?.toUpperCase()}</span>
@@ -32,6 +46,8 @@ export function CreatorProfileView({ profile, works }: { profile: CreatorProfile
       </div>
       <span className="grow" />
       <div className="creator-stat"><strong>{profile.worksCount}</strong><small>{t("creator.works")}</small></div>
+      <div className="creator-stat"><strong>{followers}</strong><small>关注者</small></div>
+      {!profile.isSelf && <button className={following ? "follow-button active" : "follow-button"} onClick={follow} disabled={pending}><UserPlusIcon size={17} weight={following ? "fill" : "duotone"} />{following ? "已关注" : "关注"}</button>}
     </section>
 
     <section className="section-heading" style={{ marginTop: 28 }}><div><h2>{t("creator.works")}</h2></div></section>

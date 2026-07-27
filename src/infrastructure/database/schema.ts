@@ -10,6 +10,8 @@ export const platformRole = pgEnum("platform_role", ["member", "creator", "curat
 export const creatorType = pgEnum("creator_type", ["individual", "team", "organization"]);
 export const verificationStatus = pgEnum("verification_status", ["draft", "submitted", "under_review", "approved", "rejected", "revoked", "expired"]);
 export const auditOutcome = pgEnum("audit_outcome", ["success", "denied", "failed"]);
+export const commentStatus = pgEnum("comment_status", ["active", "hidden", "deleted"]);
+export const collectionVisibility = pgEnum("collection_visibility", ["private", "unlisted", "public"]);
 
 export const users = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -150,6 +152,76 @@ export const favorites = pgTable("favorites", {
   creationId: uuid("creation_id").notNull().references(() => creations.id, { onDelete: "cascade" }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 }, (table) => [primaryKey({ columns: [table.userId, table.creationId] })]);
+
+export const creationLikes = pgTable("creation_likes", {
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  creationId: uuid("creation_id").notNull().references(() => creations.id, { onDelete: "cascade" }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+}, (table) => [
+  primaryKey({ columns: [table.userId, table.creationId] }),
+  index("creation_likes_creation_idx").on(table.creationId),
+]);
+
+export const comments = pgTable("comments", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  creationId: uuid("creation_id").notNull().references(() => creations.id, { onDelete: "cascade" }),
+  authorId: uuid("author_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  parentId: uuid("parent_id"),
+  content: text("content").notNull(),
+  status: commentStatus("status").notNull().default("active"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+}, (table) => [
+  index("comments_creation_idx").on(table.creationId, table.createdAt),
+  index("comments_author_idx").on(table.authorId),
+]);
+
+export const follows = pgTable("follows", {
+  followerId: uuid("follower_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  followingId: uuid("following_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+}, (table) => [
+  primaryKey({ columns: [table.followerId, table.followingId] }),
+  index("follows_following_idx").on(table.followingId),
+]);
+
+export const collections = pgTable("collections", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  ownerId: uuid("owner_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
+  slug: text("slug").notNull(),
+  description: text("description"),
+  visibility: collectionVisibility("visibility").notNull().default("private"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+}, (table) => [
+  uniqueIndex("collections_owner_slug_unique").on(table.ownerId, table.slug),
+  index("collections_owner_idx").on(table.ownerId),
+]);
+
+export const collectionItems = pgTable("collection_items", {
+  collectionId: uuid("collection_id").notNull().references(() => collections.id, { onDelete: "cascade" }),
+  creationId: uuid("creation_id").notNull().references(() => creations.id, { onDelete: "cascade" }),
+  note: text("note"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+}, (table) => [
+  primaryKey({ columns: [table.collectionId, table.creationId] }),
+  index("collection_items_creation_idx").on(table.creationId),
+]);
+
+export const notifications = pgTable("notifications", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  recipientId: uuid("recipient_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  actorId: uuid("actor_id").references(() => users.id, { onDelete: "set null" }),
+  type: text("type").notNull(),
+  entityType: text("entity_type"),
+  entityId: text("entity_id"),
+  data: jsonb("data").$type<Record<string, unknown>>().notNull().default({}),
+  readAt: timestamp("read_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+}, (table) => [
+  index("notifications_recipient_idx").on(table.recipientId, table.createdAt),
+]);
 
 export const auditLogs = pgTable("audit_logs", {
   id: uuid("id").primaryKey().defaultRandom(),
