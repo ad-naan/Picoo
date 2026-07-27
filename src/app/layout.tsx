@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import "./locale.css";
 import "./layout-fixes.css";
-import { LocaleProvider } from "@/i18n/locale-provider";
+import "./component-fixes.css";
+import { AppProviders } from "@/components/providers/app-providers";
 import { siteConfig } from "@/shared/config/site";
 
 export const metadata: Metadata = {
@@ -24,7 +25,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   };
   return (
     <html lang="zh-CN">
-      <body><LocaleProvider>{children}</LocaleProvider><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} /></body>
+      <body><AppProviders>{children}</AppProviders><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} /></body>
     </html>
   );
 }

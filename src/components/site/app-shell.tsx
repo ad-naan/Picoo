@@ -2,14 +2,15 @@
 
 import Link from "next/link";
 import {
-  BellIcon as Bell, BookmarkSimpleIcon as Bookmark, RobotIcon as Bot, CubeIcon as Box,
-  CaretDownIcon as ChevronDown, CaretRightIcon as ChevronRight, UserCircleIcon as CircleUserRound,
+  BookmarkSimpleIcon as Bookmark, RobotIcon as Bot, CubeIcon as Box,
+  CaretRightIcon as ChevronRight, UserCircleIcon as CircleUserRound,
   CompassIcon as Compass, GiftIcon as Gift, HouseIcon as Home, LightbulbIcon as Lightbulb,
   ListIcon as Menu, NewspaperIcon as Newspaper, PlusIcon as Plus, MagnifyingGlassIcon as Search,
   SparkleIcon as Sparkles, StarIcon as Star, TrophyIcon as Trophy, MagicWandIcon as WandSparkles,
   FlowArrowIcon as Workflow, WrenchIcon as Wrench,
 } from "@phosphor-icons/react";
 import { useLocale } from "@/i18n/locale-provider";
+import { UserMenu } from "@/components/site/user-menu";
 
 type NavEntry = readonly [React.ElementType, string, string, string?];
 
@@ -58,8 +59,7 @@ export function AppTopbar() {
     <div className="top-actions">
       <button className="locale-button" onClick={() => setLocale(alternateLocale[locale])}>{t("locale.switch")}</button>
       <Link href="/studio/creations/new" className="publish"><Plus size={19} /> {t("action.publish")}</Link>
-      <Link href="/settings/notifications" className="bell" aria-label="通知"><Bell size={20} /><i /></Link>
-      <Link href="/settings/profile" className="avatar user">P</Link><ChevronDown size={16} />
+      <UserMenu />
     </div>
   </header>;
 }

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import {
-  BellIcon as Bell, RobotIcon as Bot, CaretDownIcon as ChevronDown, CaretRightIcon as ChevronRight,
+  RobotIcon as Bot, CaretRightIcon as ChevronRight,
   CompassIcon as Compass, FireIcon as Flame, GiftIcon as Gift, HouseIcon as Home, LightbulbIcon as Lightbulb,
   LinkSimpleIcon as Link2, ListIcon as Menu, NewspaperIcon as Newspaper, PlusIcon as Plus,
   MagnifyingGlassIcon as Search, SparkleIcon as Sparkles, StarIcon as Star, TrophyIcon as Trophy,
@@ -13,6 +13,7 @@ import {
 import { useLocale } from "@/i18n/locale-provider";
 import { CreationCard, type CreationCardData } from "@/components/site/creation-card";
 import type { TopCreator } from "@/infrastructure/creation/creation-queries";
+import { UserMenu } from "@/components/site/user-menu";
 
 type NavEntry = readonly [React.ElementType, string, string, string?];
 
@@ -75,7 +76,7 @@ function RightRail({ creators }: { creators: TopCreator[] }) {
 export function HomeView({ creations, creators }: { creations: CreationCardData[]; creators: TopCreator[] }) {
   const { locale, setLocale, t } = useLocale();
   const alternateLocale = { "zh-CN": "en", en: "zh-CN" } as const;
-  return <div className="app-shell"><Sidebar /><main className="main"><header className="topbar"><div className="search"><Search size={18} /><input placeholder={t("search.placeholder")} /><kbd>⌘K</kbd></div><div className="top-actions"><button className="locale-button" onClick={() => setLocale(alternateLocale[locale])}>{t("locale.switch")}</button><Link href="/studio/creations/new" className="publish"><Plus size={19} /> {t("action.publish")}</Link><button className="bell" aria-label="通知"><Bell size={20} /><i /></button><Link href="/settings/profile" className="avatar user">P</Link><ChevronDown size={16} /></div></header>
+  return <div className="app-shell"><Sidebar /><main className="main"><header className="topbar"><div className="search"><Search size={18} /><input placeholder={t("search.placeholder")} /><kbd>⌘K</kbd></div><div className="top-actions"><button className="locale-button" onClick={() => setLocale(alternateLocale[locale])}>{t("locale.switch")}</button><Link href="/studio/creations/new" className="publish"><Plus size={19} /> {t("action.publish")}</Link><UserMenu /></div></header>
     <div className="content"><section className="hero"><div className="hero-copy"><h1>{t("hero.title.line1")}<br />{t("hero.title.line2")}<span>{t("hero.title.accent")}</span><Sparkles /></h1><p>{t("hero.subtitle")}</p><div><Link href="/explore" className="primary">{t("hero.explore")}</Link><Link href="/studio/creations/new" className="secondary">{t("hero.publish")}</Link></div></div><div className="hero-art"><span className="crown">♛</span><div className="hero-bot"><div>•ᴗ•</div><i /></div><div className="float-card video">▶</div><div className="float-card code">&lt;/&gt;</div><div className="orbit" /></div></section>
     <section className="categories">{categories.map(({ icon: Icon, title, sub, tone, href }) => <Link className={`category ${tone}`} key={title} href={href}><span><Icon size={25} weight="duotone" /></span><div><b>{title}</b><small>{sub}</small></div></Link>)}</section>
     <section className="section-heading"><div><h2>{t("section.featured")} <Sparkles size={18} /></h2><nav><button className="selected">{t("tab.recommended")}</button><button>{t("tab.latest")}</button><button>{t("tab.popular")}</button><button>{t("tab.following")}</button></nav></div><Link href="/explore">{t("action.viewAll")} <ChevronRight size={16} /></Link></section>
