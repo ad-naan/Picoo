@@ -7,7 +7,11 @@ export interface FeedSubscription {
   title: string;
   status: FeedStatus;
   lastPolledAt?: Date;
+  lastSuccessfulAt?: Date;
   etag?: string;
+  lastModified?: string;
+  failureCount: number;
+  lastError?: string;
 }
 
 export interface SyndicatedItem {
@@ -16,13 +20,18 @@ export interface SyndicatedItem {
   canonicalUrl: string;
   title: string;
   summary: string;
+  content: string;
+  author?: string;
+  imageUrl?: string;
   publishedAt: Date;
   importedAt: Date;
 }
 
 export interface DeliveryTarget {
   id: string;
+  name: string;
   channel: DeliveryChannel;
   endpoint: string;
   enabled: boolean;
+  configuration: Readonly<Record<string, unknown>>;
 }

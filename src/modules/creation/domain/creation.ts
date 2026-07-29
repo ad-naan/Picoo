@@ -14,6 +14,7 @@ export interface CreationProps {
   title: string;
   description: string;
   content: string;
+  sourceLocale: string;
   coverUrl?: string;
   authorId: string;
   tags: readonly string[];

@@ -63,6 +63,7 @@ export class DrizzleCreationRepository implements CreationRepository {
       const [created] = await tx.insert(creations).values({
         id, authorId: input.authorId, type: input.type, slug, status: "draft",
         title: input.title, description: input.description, content: input.content,
+        sourceLocale: input.sourceLocale,
         coverUrl: input.coverUrl, tags: [...input.tags], compatibleModels: [...input.compatibleModels],
         remixedFromId: input.remixedFromId,
       }).returning();
@@ -78,7 +79,7 @@ export class DrizzleCreationRepository implements CreationRepository {
       const id = crypto.randomUUID();
       const title = `${source.title} Remix`;
       const slug = slugify(title, shortSuffix(id));
-      const [created] = await tx.insert(creations).values({ id, authorId, type: source.type, slug, status: "draft", title, description: source.description, content: source.content, coverUrl: source.coverUrl, tags: source.tags, compatibleModels: source.compatibleModels, remixedFromId: source.id }).returning();
+      const [created] = await tx.insert(creations).values({ id, authorId, type: source.type, slug, status: "draft", title, description: source.description, content: source.content, sourceLocale: source.sourceLocale, coverUrl: source.coverUrl, tags: source.tags, compatibleModels: source.compatibleModels, remixedFromId: source.id }).returning();
       await tx.update(creations).set({ forks: sql`${creations.forks} + 1` }).where(eq(creations.id, source.id));
       return created;
     });
@@ -91,6 +92,7 @@ export class DrizzleCreationRepository implements CreationRepository {
       ...(patch.title !== undefined && { title: patch.title }),
       ...(patch.description !== undefined && { description: patch.description }),
       ...(patch.content !== undefined && { content: patch.content }),
+      ...(patch.sourceLocale !== undefined && { sourceLocale: patch.sourceLocale }),
       ...(patch.coverUrl !== undefined && { coverUrl: patch.coverUrl }),
       ...(patch.tags !== undefined && { tags: [...patch.tags] }),
       ...(patch.compatibleModels !== undefined && { compatibleModels: [...patch.compatibleModels] }),
@@ -124,6 +126,7 @@ export class DrizzleCreationRepository implements CreationRepository {
     await this.db.insert(creations).values({
       id: p.id, authorId: p.authorId, type: p.type, slug: p.slug, status: p.status,
       title: p.title, description: p.description, content: p.content, coverUrl: p.coverUrl,
+      sourceLocale: p.sourceLocale,
       tags: [...p.tags], compatibleModels: [...p.compatibleModels], remixedFromId: p.remixedFromId,
       likes: p.stats.likes, views: p.stats.views, forks: p.stats.forks, favorites: p.stats.favorites,
       publishedAt: p.publishedAt, createdAt: p.createdAt,
@@ -132,6 +135,7 @@ export class DrizzleCreationRepository implements CreationRepository {
       set: {
         type: p.type, slug: p.slug, status: p.status, title: p.title, description: p.description,
         content: p.content, coverUrl: p.coverUrl, tags: [...p.tags], compatibleModels: [...p.compatibleModels],
+        sourceLocale: p.sourceLocale,
         publishedAt: p.publishedAt, updatedAt: new Date(),
       },
     });
@@ -141,7 +145,7 @@ export class DrizzleCreationRepository implements CreationRepository {
 function toDomain(row: CreationRow): Creation {
   return Creation.create({
     id: row.id, type: row.type, slug: row.slug, status: row.status,
-    title: row.title, description: row.description, content: row.content,
+    title: row.title, description: row.description, content: row.content, sourceLocale: row.sourceLocale,
     coverUrl: row.coverUrl ?? undefined, authorId: row.authorId,
     tags: row.tags, compatibleModels: row.compatibleModels,
     stats: { likes: row.likes, views: row.views, forks: row.forks, favorites: row.favorites },

@@ -5,6 +5,8 @@ import "./layout-fixes.css";
 import "./component-fixes.css";
 import { AppProviders } from "@/components/providers/app-providers";
 import { siteConfig } from "@/shared/config/site";
+import { getRequestLocale } from "@/i18n/server";
+import { localeMetadata } from "@/i18n/catalog";
 
 export const metadata: Metadata = {
   metadataBase: siteConfig.url,
@@ -17,15 +19,17 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 } },
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const locale = await getRequestLocale();
+  const localeInfo = localeMetadata[locale];
   const structuredData = {
     "@context": "https://schema.org", "@type": "WebSite", name: siteConfig.name, url: siteConfig.url.href,
     description: siteConfig.description,
     potentialAction: { "@type": "SearchAction", target: `${siteConfig.url.href}search?q={search_term_string}`, "query-input": "required name=search_term_string" },
   };
   return (
-    <html lang="zh-CN">
-      <body><AppProviders>{children}</AppProviders><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} /></body>
+    <html lang={localeInfo.htmlLang} dir={localeInfo.direction}>
+      <body><AppProviders locale={locale}>{children}</AppProviders><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} /></body>
     </html>
   );
 }

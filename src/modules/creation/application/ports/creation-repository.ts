@@ -6,6 +6,7 @@ export interface CreateCreationInput {
   title: string;
   description: string;
   content: string;
+  sourceLocale: string;
   coverUrl?: string;
   tags: readonly string[];
   compatibleModels: readonly string[];
@@ -14,7 +15,7 @@ export interface CreateCreationInput {
 
 export type UpdateCreationPatch = Partial<Pick<
   CreateCreationInput,
-  "type" | "title" | "description" | "content" | "coverUrl" | "tags" | "compatibleModels"
+  "type" | "title" | "description" | "content" | "sourceLocale" | "coverUrl" | "tags" | "compatibleModels"
 >>;
 
 export interface ListPublishedOptions {

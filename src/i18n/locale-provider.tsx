@@ -1,17 +1,14 @@
 "use client";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { DEFAULT_LOCALE, resolveLocale, type Locale } from "./config";
-import zhCN from "./messages/zh-CN";
-import en from "./messages/en";
-const dictionaries = { "zh-CN": zhCN, en } as const;
-type MessageKey = keyof typeof zhCN;
+import { translate, type MessageKey } from "./catalog";
 type LocaleContextValue = { locale: Locale; setLocale: (locale: Locale) => void; t: (key: MessageKey) => string };
 const LocaleContext = createContext<LocaleContextValue | null>(null);
-export function LocaleProvider({ children }: { children: React.ReactNode }) {
-  const [locale, updateLocale] = useState<Locale>(DEFAULT_LOCALE);
-  useEffect(() => { const saved = window.localStorage.getItem("picoo-locale"); updateLocale(resolveLocale(saved ?? window.navigator.language)); }, []);
-  const setLocale = useCallback((next: Locale) => { updateLocale(next); window.localStorage.setItem("picoo-locale", next); document.documentElement.lang = next; }, []);
-  const t = useCallback((key: MessageKey) => dictionaries[locale][key], [locale]);
+export function LocaleProvider({ children, initialLocale = DEFAULT_LOCALE }: { children: React.ReactNode; initialLocale?: Locale }) {
+  const [locale, updateLocale] = useState<Locale>(initialLocale);
+  useEffect(() => { const saved = window.localStorage.getItem("picoo-locale"); if (saved) updateLocale(resolveLocale(saved)); }, []);
+  const setLocale = useCallback((next: Locale) => { updateLocale(next); window.localStorage.setItem("picoo-locale", next); document.cookie = `picoo-locale=${encodeURIComponent(next)}; Path=/; Max-Age=31536000; SameSite=Lax`; document.documentElement.lang = next; }, []);
+  const t = useCallback((key: MessageKey) => translate(locale, key), [locale]);
   const value = useMemo(() => ({ locale, setLocale, t }), [locale, setLocale, t]);
   return <LocaleContext.Provider value={value}>{children}</LocaleContext.Provider>;
 }

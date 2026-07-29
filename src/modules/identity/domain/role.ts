@@ -8,15 +8,17 @@ export const PERMISSIONS = [
   "creation:read", "creation:like", "creation:collect", "creation:publish", "creation:update:own", "creation:remix",
   "comment:create", "profile:update:own", "verification:submit", "verification:review", "discovery:curate",
   "moderation:review", "user:read", "user:manage", "role:grant", "platform:read", "platform:configure", "audit:read",
+  "syndication:manage",
+  "badge:read", "badge:manage", "badge:award",
 ] as const;
 export type Permission = (typeof PERMISSIONS)[number];
 
 export const ROLE_PERMISSIONS: Record<UserRole, readonly Permission[]> = {
-  member: ["creation:read", "creation:like", "creation:collect", "creation:remix", "comment:create", "profile:update:own", "verification:submit"],
-  creator: ["creation:read", "creation:like", "creation:collect", "creation:publish", "creation:update:own", "creation:remix", "comment:create", "profile:update:own", "verification:submit"],
-  curator: ["creation:read", "creation:like", "creation:collect", "creation:remix", "comment:create", "profile:update:own", "discovery:curate"],
-  moderator: ["creation:read", "creation:like", "creation:collect", "creation:remix", "comment:create", "profile:update:own", "moderation:review", "user:read"],
-  admin: ["creation:read", "creation:like", "creation:collect", "creation:publish", "creation:update:own", "creation:remix", "comment:create", "profile:update:own", "verification:review", "discovery:curate", "moderation:review", "user:read", "user:manage", "platform:read", "audit:read"],
+  member: ["creation:read", "creation:like", "creation:collect", "creation:remix", "comment:create", "profile:update:own", "verification:submit", "badge:read"],
+  creator: ["creation:read", "creation:like", "creation:collect", "creation:publish", "creation:update:own", "creation:remix", "comment:create", "profile:update:own", "verification:submit", "badge:read"],
+  curator: ["creation:read", "creation:like", "creation:collect", "creation:remix", "comment:create", "profile:update:own", "discovery:curate", "badge:read"],
+  moderator: ["creation:read", "creation:like", "creation:collect", "creation:remix", "comment:create", "profile:update:own", "moderation:review", "user:read", "badge:read"],
+  admin: ["creation:read", "creation:like", "creation:collect", "creation:publish", "creation:update:own", "creation:remix", "comment:create", "profile:update:own", "verification:review", "discovery:curate", "moderation:review", "user:read", "user:manage", "platform:read", "audit:read", "syndication:manage", "badge:read", "badge:manage", "badge:award"],
   super_admin: [...PERMISSIONS],
 };
 

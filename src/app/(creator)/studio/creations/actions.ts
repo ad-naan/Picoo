@@ -7,6 +7,8 @@ import { requirePermission } from "@/modules/identity/application/authorization"
 import { CREATION_TYPES } from "@/modules/creation/domain/creation";
 import { DrizzleCreationRepository } from "@/infrastructure/creation/drizzle-creation-repository";
 import { writeAudit } from "@/infrastructure/audit/audit-service";
+import { SUPPORTED_LOCALES } from "@/i18n/config";
+import { DrizzleTranslationJobRepository } from "@/infrastructure/localization/drizzle-translation-job-repository";
 
 const repository = new DrizzleCreationRepository();
 
@@ -17,6 +19,7 @@ const creationSchema = z.object({
   title: z.string().trim().min(4).max(120),
   description: z.string().trim().min(10).max(400),
   content: z.string().trim().max(20000).default(""),
+  sourceLocale: z.enum(SUPPORTED_LOCALES),
   coverUrl: z.string().trim().url().max(500).optional().or(z.literal("")),
   tags: z.string().max(400).default(""),
   compatibleModels: z.string().max(400).default(""),
@@ -29,6 +32,7 @@ function parseForm(formData: FormData) {
     title: parsed.title,
     description: parsed.description,
     content: parsed.content ?? "",
+    sourceLocale: parsed.sourceLocale,
     coverUrl: parsed.coverUrl ? parsed.coverUrl : undefined,
     tags: listField(parsed.tags),
     compatibleModels: listField(parsed.compatibleModels),
@@ -93,4 +97,16 @@ export async function deleteCreation(formData: FormData) {
   await writeAudit({ actorId: user.id, action: "creation.delete", resourceType: "creation", resourceId: id });
   revalidatePath("/studio/creations");
   revalidatePath("/explore");
+}
+
+export async function queueCreationTranslation(formData: FormData) {
+  const user = await requirePermission("creation:update:own");
+  const id = z.string().uuid().parse(formData.get("id"));
+  const targetLocale = z.enum(SUPPORTED_LOCALES).parse(formData.get("targetLocale"));
+  const creation = await assertOwner(id, user.id);
+  if (creation.props.sourceLocale === targetLocale) throw new Error("TRANSLATION_TARGET_MATCHES_SOURCE");
+  const jobs = new DrizzleTranslationJobRepository();
+  const jobId = await jobs.enqueue({ entityType: "creation", entityId: id, sourceLocale: creation.props.sourceLocale, targetLocale, requestedBy: user.id });
+  await writeAudit({ actorId: user.id, action: "creation.translation.queue", resourceType: "translation_job", resourceId: jobId, metadata: { creationId: id, sourceLocale: creation.props.sourceLocale, targetLocale } });
+  revalidatePath(`/studio/creations/${id}/edit`);
 }

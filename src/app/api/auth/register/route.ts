@@ -16,12 +16,8 @@ const registrationSchema = z.object({
 export async function POST(request: Request) {
   const requestHeaders = await headers();
   const ip = requestHeaders.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "local";
-  try {
-    const rateLimit = await consumeRateLimit(`auth:register:${ip}`, 5, 60 * 60);
-    if (!rateLimit.allowed) return NextResponse.json({ error: "RATE_LIMITED", retryAfter: rateLimit.retryAfter }, { status: 429 });
-  } catch {
-    return NextResponse.json({ error: "AUTH_SERVICE_UNAVAILABLE" }, { status: 503 });
-  }
+  const rateLimit = await consumeRateLimit(`auth:register:${ip}`, 5, 60 * 60);
+  if (!rateLimit.allowed) return NextResponse.json({ error: "RATE_LIMITED", retryAfter: rateLimit.retryAfter }, { status: 429 });
 
   const body = await request.json().catch(() => null);
   const parsed = registrationSchema.safeParse(body);
