@@ -2,13 +2,35 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { BookmarkSimpleIcon as Bookmark, HeartIcon as Heart, ChatCircleIcon as MessageCircle, SparkleIcon as Sparkles } from "@phosphor-icons/react";
+import {
+  BookmarkSimpleIcon,
+  ChatCircleIcon,
+  FlowArrowIcon,
+  HeartIcon,
+  MagicWandIcon,
+  RobotIcon,
+  SparkleIcon,
+  WrenchIcon,
+} from "@phosphor-icons/react";
+import type { MessageKey } from "@/i18n/catalog";
+import { useLocale } from "@/i18n/locale-provider";
 
-const ART_KINDS = ["planet", "robot", "nodes", "portrait"] as const;
+const ART_KINDS = ["agent", "workflow", "prompt", "tool"] as const;
 type ArtKind = (typeof ART_KINDS)[number];
 
-const TYPE_LABEL: Record<string, string> = {
-  agent: "Agent", workflow: "工作流", prompt: "Prompt", tool: "工具", article: "文章",
+const TYPE_LABEL: Record<string, MessageKey> = {
+  agent: "creation.type.agent",
+  workflow: "creation.type.workflow",
+  prompt: "creation.type.prompt",
+  tool: "creation.type.tool",
+  article: "creation.type.article",
+};
+
+const ART_ICON: Record<ArtKind, React.ElementType> = {
+  agent: RobotIcon,
+  workflow: FlowArrowIcon,
+  prompt: MagicWandIcon,
+  tool: WrenchIcon,
 };
 
 export interface CreationCardData {
@@ -20,38 +42,53 @@ export interface CreationCardData {
   likes: string;
   comments: number;
   coverUrl?: string;
+  href?: string;
+  authorHref?: string;
 }
 
-// 无封面时按 slug 稳定地选一个手绘 CSS 主题，避免每次渲染跳动。
-function artFor(slug: string): ArtKind {
+function artFor(slug: string, type: string): ArtKind {
+  if (ART_KINDS.includes(type as ArtKind)) return type as ArtKind;
   let hash = 0;
   for (const char of slug) hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
   return ART_KINDS[hash % ART_KINDS.length];
 }
 
-function Artwork({ kind }: { kind: ArtKind }) {
-  return <div className={`artwork ${kind}`} aria-hidden="true">
-    {kind === "robot" && <><div className="bot-head"><span>•ᴗ•</span></div><div className="bot-body" /></>}
-    {kind === "planet" && <><div className="planet-ball" /><div className="planet-ring" /><Sparkles size={25} /></>}
-    {kind === "nodes" && <><span className="node n1">AI</span><span className="node n2">API</span><span className="node n3">DB</span><i /><i /><i /></>}
-    {kind === "portrait" && <><div className="portrait-hair" /><div className="portrait-face" /><span className="bubble" /></>}
-  </div>;
+function Artwork({ kind, title }: { kind: ArtKind; title: string }) {
+  const Icon = ART_ICON[kind];
+  return (
+    <div className={`creation-art creation-art-${kind}`} aria-hidden="true">
+      <div className="creation-art-grid" />
+      <span className="creation-art-orbit" />
+      <div className="creation-art-icon"><Icon weight="duotone" /></div>
+      <div className="creation-art-copy"><small>Picoo / {kind}</small><strong>{title}</strong></div>
+      <SparkleIcon className="creation-art-spark" weight="fill" />
+    </div>
+  );
 }
 
 export function CreationCard({ item, index }: { item: CreationCardData; index: number }) {
-  return <motion.article className="creation-card" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: .08 * index }}>
-    <Link href={`/creation/${item.slug}`} className="cover">
-      {item.coverUrl
-        ? <img src={item.coverUrl} alt={item.title} className="cover-image" />
-        : <Artwork kind={artFor(item.slug)} />}
-      <span className="type-pill">{TYPE_LABEL[item.type] ?? item.type}</span>
-    </Link>
-    <button className="save" aria-label="收藏"><Bookmark size={17} /></button>
-    <Link href={`/creation/${item.slug}`} className="card-copy"><h3>{item.title}</h3><p>{item.description}</p></Link>
-    <div className="card-meta">
-      <Link href={`/creator/${item.authorHandle}`} className="avatar tiny">{item.authorHandle[0]?.toUpperCase()}</Link>
-      <Link href={`/creator/${item.authorHandle}`}>@{item.authorHandle}</Link>
-      <span className="grow" /><Heart size={14} /> {item.likes}<MessageCircle size={14} /> {item.comments}
-    </div>
-  </motion.article>;
+  const { t } = useLocale();
+  const creationHref = item.href ?? `/creation/${item.slug}`;
+  const authorHref = item.authorHref ?? `/creator/${item.authorHandle}`;
+  let typeLabel = item.type;
+  const typeMessage = TYPE_LABEL[item.type];
+  if (typeMessage) typeLabel = t(typeMessage);
+  const kind = artFor(item.slug, item.type);
+  const animationDelay = Math.min(index, 5) * 0.045;
+  let visual: React.ReactNode = <Artwork kind={kind} title={item.title} />;
+  if (item.coverUrl) visual = <img src={item.coverUrl} alt={item.title} className="cover-image" />;
+  return (
+    <motion.article className="creation-card" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: animationDelay }}>
+      <Link href={creationHref} className="cover">{visual}<span className="type-pill">{typeLabel}</span></Link>
+      <button className="save" aria-label={t("action.collect")}><BookmarkSimpleIcon size={17} weight="duotone" /></button>
+      <Link href={creationHref} className="card-copy"><h3>{item.title}</h3><p>{item.description}</p></Link>
+      <div className="card-meta">
+        <Link href={authorHref} className="avatar tiny">{item.authorHandle[0]?.toUpperCase()}</Link>
+        <Link href={authorHref} className="card-author">@{item.authorHandle}</Link>
+        <span className="grow" />
+        <span><HeartIcon weight="duotone" />{item.likes}</span>
+        <span><ChatCircleIcon weight="duotone" />{item.comments}</span>
+      </div>
+    </motion.article>
+  );
 }

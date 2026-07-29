@@ -2,75 +2,130 @@
 
 import Link from "next/link";
 import {
-  BookmarkSimpleIcon as Bookmark, RobotIcon as Bot, CubeIcon as Box,
-  CaretRightIcon as ChevronRight, UserCircleIcon as CircleUserRound,
-  CompassIcon as Compass, GiftIcon as Gift, HouseIcon as Home, LightbulbIcon as Lightbulb,
-  ListIcon as Menu, NewspaperIcon as Newspaper, PlusIcon as Plus, MagnifyingGlassIcon as Search,
-  SparkleIcon as Sparkles, StarIcon as Star, TrophyIcon as Trophy, MagicWandIcon as WandSparkles,
-  FlowArrowIcon as Workflow, WrenchIcon as Wrench,
+  BookmarkSimpleIcon,
+  CaretRightIcon,
+  CompassIcon,
+  FlowArrowIcon,
+  GiftIcon,
+  HouseIcon,
+  ListIcon,
+  MagicWandIcon,
+  MagnifyingGlassIcon,
+  NewspaperIcon,
+  PlusIcon,
+  RobotIcon,
+  SparkleIcon,
+  SquaresFourIcon,
+  UsersThreeIcon,
+  WrenchIcon,
 } from "@phosphor-icons/react";
+import type { MessageKey } from "@/i18n/catalog";
 import { useLocale } from "@/i18n/locale-provider";
 import { UserMenu } from "@/components/site/user-menu";
+import { cn } from "@/shared/lib/cn";
 
-type NavEntry = readonly [React.ElementType, string, string, string?];
+type NavEntry = Readonly<{
+  icon: React.ElementType;
+  label: MessageKey;
+  href: string;
+  badge?: string;
+}>;
 
 const primaryNav: readonly NavEntry[] = [
-  [Home, "首页", "/"], [Compass, "发现", "/explore"], [Star, "关注", "/explore?sort=latest"],
-  [Lightbulb, "灵感", "/explore?sort=trending"], [Trophy, "排行榜", "/explore"], [Gift, "活动", "/explore", "New"],
+  { icon: HouseIcon, label: "nav.home", href: "/" },
+  { icon: CompassIcon, label: "nav.explore", href: "/explore" },
+  { icon: UsersThreeIcon, label: "nav.following", href: "/explore?sort=latest" },
+  { icon: SparkleIcon, label: "nav.inspiration", href: "/explore?sort=trending" },
+  { icon: GiftIcon, label: "nav.deals", href: "/explore?type=tool", badge: "NEW" },
 ];
-const creationNav: readonly NavEntry[] = [
-  [Box, "发布作品", "/studio/creations/new"], [CircleUserRound, "我的作品", "/studio/creations"],
-  [Newspaper, "草稿箱", "/studio/creations"], [Bookmark, "收藏夹", "/settings/profile"],
-];
-const exploreNav: readonly NavEntry[] = [
-  [Bot, "Agents", "/explore?type=agent"], [Workflow, "工作流", "/explore?type=workflow"],
-  [WandSparkles, "Prompt", "/explore?type=prompt"], [Wrench, "工具", "/explore?type=tool"],
-  [Newspaper, "资源", "/explore?type=article"],
+
+const libraryNav: readonly NavEntry[] = [
+  { icon: RobotIcon, label: "creation.type.agent", href: "/explore?type=agent" },
+  { icon: FlowArrowIcon, label: "creation.type.workflow", href: "/explore?type=workflow" },
+  { icon: MagicWandIcon, label: "creation.type.prompt", href: "/explore?type=prompt" },
+  { icon: WrenchIcon, label: "creation.type.tool", href: "/explore?type=tool" },
+  { icon: NewspaperIcon, label: "creation.type.article", href: "/explore?type=article" },
 ];
 
 function Logo() {
-  return <div className="logo"><span className="logo-mark"><i /><i /><i /></span>Picoo</div>;
+  return (
+    <Link href="/" className="logo" aria-label="Picoo">
+      <span className="logo-symbol" aria-hidden="true"><i /><i /><i /><b /></span>
+      <span>Picoo</span>
+    </Link>
+  );
 }
 
 function NavItem({ item, active }: { item: NavEntry; active: boolean }) {
-  const [Icon, label, href, badge] = item;
-  return <Link href={href} className={`nav-item ${active ? "active" : ""}`}><Icon size={20} weight={active ? "fill" : "duotone"} /><span>{label}</span>{badge && <b>{badge}</b>}</Link>;
+  const { t } = useLocale();
+  const Icon = item.icon;
+  let weight: "fill" | "duotone" = "duotone";
+  if (active) weight = "fill";
+  return (
+    <Link href={item.href} className={cn("nav-item", { active })}>
+      <Icon size={20} weight={weight} />
+      <span>{t(item.label)}</span>
+      {item.badge && <b>{item.badge}</b>}
+    </Link>
+  );
 }
 
 export function AppSidebar({ activeHref }: { activeHref?: string }) {
-  return <aside className="sidebar">
-    <div className="brand-row"><Logo /><button className="icon-button" aria-label="折叠菜单"><Menu size={18} /></button></div>
-    <nav>
-      {primaryNav.map((x) => <NavItem key={x[1]} item={x} active={x[2] === activeHref} />)}
-      <p className="nav-label">创作</p>
-      {creationNav.map((x) => <NavItem key={x[1]} item={x} active={x[2] === activeHref} />)}
-      <p className="nav-label">探索</p>
-      {exploreNav.map((x) => <NavItem key={x[1]} item={x} active={x[2] === activeHref} />)}
-    </nav>
-    <div className="inspiration"><Sparkles size={22} /><h3>每日灵感</h3><p>每天发现一个有趣的 AI 创意</p><Link href="/explore?sort=trending" className="inspiration-cta">去看看 <ChevronRight size={15} /></Link><div className="mini-bot">•ᴗ•</div></div>
-  </aside>;
+  const { t } = useLocale();
+  return (
+    <aside className="sidebar">
+      <div className="brand-row">
+        <Logo />
+        <button className="icon-button" aria-label={t("nav.collapse")}><ListIcon size={18} /></button>
+      </div>
+      <nav className="sidebar-navigation">
+        <div className="nav-cluster">{primaryNav.map((item) => <NavItem key={item.href} item={item} active={item.href === activeHref} />)}</div>
+        <p className="nav-label">{t("nav.library")}</p>
+        <div className="nav-cluster">{libraryNav.map((item) => <NavItem key={item.href} item={item} active={item.href === activeHref} />)}</div>
+      </nav>
+      <div className="sidebar-create-card">
+        <span><SparkleIcon weight="fill" /></span>
+        <strong>{t("nav.createTitle")}</strong>
+        <p>{t("nav.createDescription")}</p>
+        <Link href="/studio/creations/new">{t("explore.startCreating")}<CaretRightIcon weight="bold" /></Link>
+      </div>
+      <Link className="sidebar-collection" href="/settings/collections"><BookmarkSimpleIcon weight="duotone" />{t("dashboard.nav.collections")}</Link>
+    </aside>
+  );
 }
 
 export function AppTopbar() {
   const { locale, setLocale, t } = useLocale();
-  const alternateLocale = { "zh-CN": "en", en: "zh-CN" } as const;
-  return <header className="topbar">
-    <div className="search"><Search size={18} /><input placeholder={t("search.placeholder")} /><kbd>⌘K</kbd></div>
-    <div className="top-actions">
-      <button className="locale-button" onClick={() => setLocale(alternateLocale[locale])}>{t("locale.switch")}</button>
-      <Link href="/studio/creations/new" className="publish"><Plus size={19} /> {t("action.publish")}</Link>
-      <UserMenu />
-    </div>
-  </header>;
+  const nextLocale = new Map([["zh-CN", "en"], ["en", "zh-CN"]] as const).get(locale) ?? "zh-CN";
+  return (
+    <header className="topbar">
+      <label className="search">
+        <MagnifyingGlassIcon size={18} />
+        <input aria-label={t("search.placeholder")} placeholder={t("search.placeholder")} />
+        <kbd>⌘ K</kbd>
+      </label>
+      <div className="top-actions">
+        <button className="locale-button" onClick={() => setLocale(nextLocale)}>{t("locale.switch")}</button>
+        <Link href="/studio/creations/new" className="publish"><PlusIcon size={18} weight="bold" /><span>{t("action.publish")}</span></Link>
+        <UserMenu />
+      </div>
+    </header>
+  );
 }
 
-// 公开页外壳：侧栏 + 顶栏 + 内容区 + 右栏。首页保留自有实现以维持独特视觉。
 export function AppShell({ children, rightRail, activeHref }: {
-  children: React.ReactNode; rightRail?: React.ReactNode; activeHref?: string;
+  children: React.ReactNode;
+  rightRail?: React.ReactNode;
+  activeHref?: string;
 }) {
-  return <div className="app-shell">
-    <AppSidebar activeHref={activeHref} />
-    <main className="main"><AppTopbar /><div className="content">{children}</div></main>
-    {rightRail ?? <aside className="right-rail" />}
-  </div>;
+  let shellClassName = "app-shell shell-without-rail";
+  if (rightRail) shellClassName = "app-shell";
+  return (
+    <div className={shellClassName}>
+      <AppSidebar activeHref={activeHref} />
+      <AppTopbar />
+      <main className="main"><div className="content">{children}</div></main>
+      {rightRail}
+    </div>
+  );
 }

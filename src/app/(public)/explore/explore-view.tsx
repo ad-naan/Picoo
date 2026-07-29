@@ -1,14 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { CaretRightIcon as ChevronRight } from "@phosphor-icons/react";
+import { ArrowRightIcon, CirclesFourIcon, CompassIcon, CubeIcon, FlowArrowIcon, MagicWandIcon, RobotIcon, SparkleIcon, TrendUpIcon, WrenchIcon } from "@phosphor-icons/react";
 import { AppShell } from "@/components/site/app-shell";
 import { CreationCard, type CreationCardData } from "@/components/site/creation-card";
 import { useLocale } from "@/i18n/locale-provider";
+import type { MessageKey } from "@/i18n/catalog";
 
-const TYPE_TABS = [
-  { key: "", label: "全部" }, { key: "agent", label: "Agent" }, { key: "workflow", label: "工作流" },
-  { key: "prompt", label: "Prompt" }, { key: "tool", label: "工具" }, { key: "article", label: "文章" },
+const TYPE_TABS: readonly { key: string; label: MessageKey; icon: React.ElementType }[] = [
+  { key: "", label: "explore.all", icon: CirclesFourIcon },
+  { key: "agent", label: "creation.type.agent", icon: RobotIcon },
+  { key: "workflow", label: "creation.type.workflow", icon: FlowArrowIcon },
+  { key: "prompt", label: "creation.type.prompt", icon: MagicWandIcon },
+  { key: "tool", label: "creation.type.tool", icon: WrenchIcon },
+  { key: "article", label: "creation.type.article", icon: CubeIcon },
 ];
 
 function buildHref(type: string, sort: string) {
@@ -16,26 +21,29 @@ function buildHref(type: string, sort: string) {
   if (type) params.set("type", type);
   if (sort) params.set("sort", sort);
   const query = params.toString();
-  return query ? `/explore?${query}` : "/explore";
+  if (query) return `/explore?${query}`;
+  return "/explore";
 }
 
-export function ExploreView({ items, activeType, activeSort }: {
-  items: CreationCardData[]; activeType: string; activeSort: string;
+export function ExploreView({ items, activeType, activeSort, curatedFallback }: {
+  items: CreationCardData[]; activeType: string; activeSort: string; curatedFallback: boolean;
 }) {
   const { t } = useLocale();
+  let trendingClass = "explore-sort-link";
+  let latestClass = "explore-sort-link";
+  if (activeSort === "latest") latestClass += " selected";
+  if (activeSort !== "latest") trendingClass += " selected";
   return <AppShell activeHref="/explore">
-    <section className="section-heading" style={{ marginTop: 22 }}>
-      <div>
-        <h2>{t("explore.title")}</h2>
-        <nav>{TYPE_TABS.map((tab) => <Link key={tab.key || "all"} href={buildHref(tab.key, activeSort)} className={tab.key === activeType ? "selected" : ""}>{tab.label}</Link>)}</nav>
-      </div>
-      <nav className="section-heading" style={{ gap: 18 }}>
-        <Link href={buildHref(activeType, "trending")} className={activeSort !== "latest" ? "selected" : ""}>{t("explore.sort.trending")}</Link>
-        <Link href={buildHref(activeType, "latest")} className={activeSort === "latest" ? "selected" : ""}>{t("explore.sort.latest")}</Link>
-      </nav>
-    </section>
-    {items.length > 0
-      ? <section className="creation-grid">{items.map((item, i) => <CreationCard key={item.slug} item={item} index={i} />)}</section>
-      : <section className="dashboard-card" style={{ textAlign: "center", padding: 48 }}><p>{t("explore.empty")}</p><Link href="/studio/creations/new" className="primary" style={{ display: "inline-flex", padding: "10px 20px", borderRadius: 12, marginTop: 12 }}>{t("action.publish")} <ChevronRight size={16} /></Link></section>}
+    <div className="explore-page">
+      <section className="explore-hero">
+        <div className="explore-hero-copy"><span className="explore-eyebrow"><CompassIcon weight="fill" />{t("explore.eyebrow")}</span><h1>{t("explore.heroTitle")}</h1><p>{t("explore.heroDescription")}</p><div className="explore-hero-actions"><Link href="/studio/creations/new" className="explore-primary">{t("explore.startCreating")}<ArrowRightIcon weight="bold" /></Link><Link href="/explore?sort=trending" className="explore-secondary"><TrendUpIcon />{t("explore.viewTrending")}</Link></div><div className="explore-stats"><span><b>8+</b>{t("explore.assetCount")}</span><span><b>5</b>{t("explore.categoryCount")}</span><span><b>100%</b>{t("explore.remixReady")}</span></div></div>
+        <div className="explore-hero-art" aria-hidden="true"><div className="explore-orbit orbit-one" /><div className="explore-orbit orbit-two" /><div className="explore-art-card art-agent"><RobotIcon weight="duotone" /><span>Agent</span></div><div className="explore-art-card art-flow"><FlowArrowIcon weight="duotone" /><span>Workflow</span></div><div className="explore-art-card art-prompt"><SparkleIcon weight="fill" /><span>Prompt</span></div><div className="explore-spark spark-a">✦</div><div className="explore-spark spark-b">✧</div></div>
+      </section>
+      <section className="explore-toolbar"><div><h2>{t("explore.resultsTitle")}</h2><p>{t("explore.resultsDescription")}</p></div><div className="explore-sort"><Link href={buildHref(activeType, "trending")} className={trendingClass}>{t("explore.sort.trending")}</Link><Link href={buildHref(activeType, "latest")} className={latestClass}>{t("explore.sort.latest")}</Link></div></section>
+      <nav className="explore-type-tabs" aria-label={t("explore.title")}>{TYPE_TABS.map(({ key, label, icon: Icon }) => { let className = "explore-type-tab"; if (key === activeType) className += " selected"; return <Link key={key || "all"} href={buildHref(key, activeSort)} className={className}><Icon weight="duotone" />{t(label)}</Link>; })}</nav>
+      {curatedFallback && <section className="curated-notice"><span><SparkleIcon weight="fill" /></span><div><b>{t("explore.curatedTitle")}</b><p>{t("explore.curatedDescription")}</p></div><em>{t("explore.templateBadge")}</em></section>}
+      <section className="creation-grid explore-grid">{items.map((item, index) => <CreationCard key={item.slug} item={item} index={index} />)}</section>
+      <section className="explore-creator-cta"><div className="cta-icon"><MagicWandIcon weight="duotone" /></div><div><h2>{t("explore.creatorCtaTitle")}</h2><p>{t("explore.creatorCtaDescription")}</p></div><Link href="/studio/creations/new">{t("action.publish")}<ArrowRightIcon weight="bold" /></Link></section>
+    </div>
   </AppShell>;
 }
