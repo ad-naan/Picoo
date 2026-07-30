@@ -33,7 +33,7 @@ function parseForm(formData: FormData) {
     description: parsed.description,
     content: parsed.content ?? "",
     sourceLocale: parsed.sourceLocale,
-    coverUrl: parsed.coverUrl ? parsed.coverUrl : undefined,
+    coverUrl: parsed.coverUrl || undefined,
     tags: listField(parsed.tags),
     compatibleModels: listField(parsed.compatibleModels),
   };

@@ -2,12 +2,13 @@ import { desc, eq } from "drizzle-orm";
 import { requireUser } from "@/modules/identity/application/authorization";
 import { getDatabase } from "@/infrastructure/database/client";
 import { notifications, users } from "@/infrastructure/database/schema";
+import { NOTIFICATION_MESSAGES } from "@/i18n/domain-labels";
+import { getServerTranslator } from "@/i18n/server";
 import { markAllNotificationsRead } from "./actions";
 
-const notificationLabels: Record<string, string> = { "creation.liked": "点赞了你的作品", "creation.commented": "评论了你的作品", "creator.followed": "关注了你" };
-
-export default async function NotificationsPage() {
+export default async function NotificationSettingsPage() {
   const user = await requireUser();
+  const { locale, t } = await getServerTranslator();
   const rows = await getDatabase().select({ id: notifications.id, type: notifications.type, data: notifications.data, readAt: notifications.readAt, createdAt: notifications.createdAt, actorName: users.name, actorHandle: users.handle }).from(notifications).leftJoin(users, eq(users.id, notifications.actorId)).where(eq(notifications.recipientId, user.id)).orderBy(desc(notifications.createdAt)).limit(100);
-  return <><header className="dashboard-header"><div><h1>通知中心</h1><p>关注作品反馈、认证进度和平台动态。</p></div><form action={markAllNotificationsRead}><button className="dashboard-action">全部标为已读</button></form></header><section className="dashboard-card"><div className="setting-list">{rows.map((item) => <article className="setting-item" key={item.id}><div><b>{item.actorName ?? item.actorHandle ?? "Picoo"} {notificationLabels[item.type] ?? item.type}</b><small>{typeof item.data.title === "string" ? item.data.title : ""} · {item.createdAt.toLocaleString("zh-CN")}</small></div>{!item.readAt && <span className="status-badge">新</span>}</article>)}{rows.length === 0 && <p>暂时没有新通知。</p>}</div></section></>;
+  return <><header className="dashboard-header"><div><h1>{t("settings.notifications.title")}</h1><p>{t("settings.notifications.subtitle")}</p></div><form action={markAllNotificationsRead}><button className="dashboard-action">{t("settings.notifications.markAll")}</button></form></header><section className="dashboard-card"><div className="setting-list">{rows.map((item) => { let title = ""; if (typeof item.data.title === "string") title = item.data.title; const notificationKey = NOTIFICATION_MESSAGES[item.type]; let action = item.type; if (notificationKey) action = t(notificationKey); return <article className="setting-item" key={item.id}><div><b>{item.actorName ?? item.actorHandle ?? "Picoo"} {action}</b><small>{title} · {item.createdAt.toLocaleString(locale)}</small></div>{!item.readAt && <span className="status-badge">{t("settings.notifications.new")}</span>}</article>; })}{rows.length === 0 && <p>{t("settings.notifications.empty")}</p>}</div></section></>;
 }
