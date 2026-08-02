@@ -42,3 +42,26 @@ export const NOTIFICATION_MESSAGES: Record<string, MessageKey> = {
   "creation.liked": "notification.creationLiked", "creation.commented": "notification.creationCommented",
   "creator.followed": "notification.creatorFollowed",
 };
+
+export const AUDIT_OUTCOME_MESSAGES: Record<string, MessageKey> = {
+  success: "audit.outcome.success", denied: "audit.outcome.denied", failed: "audit.outcome.failed",
+};
+
+export const AUDIT_ACTION_MESSAGES: Record<string, MessageKey> = {
+  "user.status.update": "audit.action.userStatusUpdate",
+  "user.role.grant": "audit.action.userRoleGrant",
+  "user.role.revoke": "audit.action.userRoleRevoke",
+  "verification.approve": "audit.action.verificationApprove",
+  "verification.reject": "audit.action.verificationReject",
+  "feature_flag.toggle": "audit.action.featureFlagToggle",
+  "badge.create": "audit.action.badgeCreate",
+  "badge.award": "audit.action.badgeAward",
+  "creation.create": "audit.action.creationCreate",
+  "creation.update": "audit.action.creationUpdate",
+  "creation.publish": "audit.action.creationPublish",
+  "creation.archive": "audit.action.creationArchive",
+  "creation.delete": "audit.action.creationDelete",
+  "creation.translation.queue": "audit.action.translationQueue",
+  "profile.update": "audit.action.profileUpdate",
+  "account.password.change": "audit.action.passwordChange",
+};

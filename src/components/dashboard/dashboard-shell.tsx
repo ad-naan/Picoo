@@ -8,6 +8,7 @@ import {
   CaretRightIcon,
   CertificateIcon,
   ChartLineUpIcon,
+  ClipboardTextIcon,
   FolderSimpleIcon,
   GearIcon,
   HouseIcon,
@@ -52,6 +53,7 @@ const navigation: Record<DashboardArea, readonly NavItem[]> = {
     ["/admin/verifications", CertificateIcon, "dashboard.nav.verifications"],
     ["/admin/badges", MedalIcon, "dashboard.nav.badges"],
     ["/admin/syndication", RssSimpleIcon, "dashboard.nav.syndication"],
+    ["/admin/audit", ClipboardTextIcon, "dashboard.nav.audit"],
     ["/admin/settings", SlidersHorizontalIcon, "dashboard.nav.advanced"],
   ],
 };
